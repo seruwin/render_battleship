@@ -15,6 +15,7 @@ use crate::{
     BOARD_SIZE,
     SHIP_ORDER,
     ICON_ORDER,
+    SCREEN_ZOOM,
 };
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -61,6 +62,8 @@ pub struct GameBoard {
     pub lose_image: Image,
     pub board_shade: [Image; 2],
     pub status_text: Text,
+    pub ship_counter: [[Text; 4]; 2],
+    pub ship_counter_data: [[i32; 4]; 2],
 }
 
 impl GameBoard {
@@ -85,10 +88,72 @@ impl GameBoard {
                             Some(Metrics::new(16.0, 16.0).scale(*scale as f32)),
                             Vec3::new(490.0, 4.0, 0.0),
                             Vec2::new(200.0, 16.0)),
+            ship_counter: [
+                [
+                    Text::new(renderer,Some(Metrics::new(16.0, 16.0).scale(*scale as f32)), 
+                                        Vec3::new(46.0 * SCREEN_ZOOM, 326.0 * SCREEN_ZOOM, 0.0), Vec2::new(32.0, 16.0)),
+                    Text::new(renderer,Some(Metrics::new(16.0, 16.0).scale(*scale as f32)), 
+                                        Vec3::new(46.0 * SCREEN_ZOOM, 301.0 * SCREEN_ZOOM, 0.0), Vec2::new(32.0, 16.0)),
+                    Text::new(renderer,Some(Metrics::new(16.0, 16.0).scale(*scale as f32)), 
+                                        Vec3::new(156.0 * SCREEN_ZOOM, 326.0 * SCREEN_ZOOM, 0.0), Vec2::new(32.0, 16.0)),
+                    Text::new(renderer,Some(Metrics::new(16.0, 16.0).scale(*scale as f32)), 
+                                        Vec3::new(156.0 * SCREEN_ZOOM, 301.0 * SCREEN_ZOOM, 0.0), Vec2::new(32.0, 16.0)),                        
+                ],
+                [
+                    Text::new(renderer,Some(Metrics::new(16.0, 16.0).scale(*scale as f32)), 
+                                        Vec3::new(315.0 * SCREEN_ZOOM, 326.0 * SCREEN_ZOOM, 0.0), Vec2::new(32.0, 16.0)),
+                    Text::new(renderer,Some(Metrics::new(16.0, 16.0).scale(*scale as f32)), 
+                                        Vec3::new(315.0 * SCREEN_ZOOM, 301.0 * SCREEN_ZOOM, 0.0), Vec2::new(32.0, 16.0)),
+                    Text::new(renderer,Some(Metrics::new(16.0, 16.0).scale(*scale as f32)), 
+                                        Vec3::new(425.0 * SCREEN_ZOOM, 326.0 * SCREEN_ZOOM, 0.0), Vec2::new(32.0, 16.0)),
+                    Text::new(renderer,Some(Metrics::new(16.0, 16.0).scale(*scale as f32)), 
+                                        Vec3::new(425.0 * SCREEN_ZOOM, 301.0 * SCREEN_ZOOM, 0.0), Vec2::new(32.0, 16.0)),                        
+                ],
+            ],
+            ship_counter_data: [[0,0,0,0],[0,0,0,0]],
         };
+
+        result.ship_counter_data = [
+            result.size_count.clone(),
+            result.size_count.clone(),
+        ];
+
         result.status_text.set_buffer_size(renderer, renderer.size().width as i32, renderer.size().height as i32)
             .set_bounds(Some(Bounds::new(348.0, 0.0, 746.0, 20.0)))
             .set_default_color(Color::rgba(185, 185, 185, 255));
+
+        result.ship_counter[0][0].set_buffer_size(renderer, renderer.size().width as i32, renderer.size().height as i32)
+            .set_bounds(Some(Bounds::new(34.0 * SCREEN_ZOOM, 326.0 * SCREEN_ZOOM, 61.0 * SCREEN_ZOOM, 341.0 * SCREEN_ZOOM)))
+            .set_default_color(Color::rgba(185, 185, 185, 255));
+        result.ship_counter[0][1].set_buffer_size(renderer, renderer.size().width as i32, renderer.size().height as i32)
+            .set_bounds(Some(Bounds::new(34.0 * SCREEN_ZOOM, 301.0 * SCREEN_ZOOM, 61.0 * SCREEN_ZOOM, 316.0 * SCREEN_ZOOM)))
+            .set_default_color(Color::rgba(185, 185, 185, 255));
+        result.ship_counter[0][2].set_buffer_size(renderer, renderer.size().width as i32, renderer.size().height as i32)
+            .set_bounds(Some(Bounds::new(144.0 * SCREEN_ZOOM, 326.0 * SCREEN_ZOOM, 171.0 * SCREEN_ZOOM, 341.0 * SCREEN_ZOOM)))
+            .set_default_color(Color::rgba(185, 185, 185, 255));
+        result.ship_counter[0][3].set_buffer_size(renderer, renderer.size().width as i32, renderer.size().height as i32)
+            .set_bounds(Some(Bounds::new(144.0 * SCREEN_ZOOM, 301.0 * SCREEN_ZOOM, 171.0 * SCREEN_ZOOM, 316.0 * SCREEN_ZOOM)))
+            .set_default_color(Color::rgba(185, 185, 185, 255));
+
+        result.ship_counter[1][0].set_buffer_size(renderer, renderer.size().width as i32, renderer.size().height as i32)
+            .set_bounds(Some(Bounds::new(303.0 * SCREEN_ZOOM, 326.0 * SCREEN_ZOOM, 330.0 * SCREEN_ZOOM, 341.0 * SCREEN_ZOOM)))
+            .set_default_color(Color::rgba(185, 185, 185, 255));
+        result.ship_counter[1][1].set_buffer_size(renderer, renderer.size().width as i32, renderer.size().height as i32)
+            .set_bounds(Some(Bounds::new(303.0 * SCREEN_ZOOM, 301.0 * SCREEN_ZOOM, 330.0 * SCREEN_ZOOM, 316.0 * SCREEN_ZOOM)))
+            .set_default_color(Color::rgba(185, 185, 185, 255));
+        result.ship_counter[1][2].set_buffer_size(renderer, renderer.size().width as i32, renderer.size().height as i32)
+            .set_bounds(Some(Bounds::new(413.0 * SCREEN_ZOOM, 326.0 * SCREEN_ZOOM, 440.0 * SCREEN_ZOOM, 341.0 * SCREEN_ZOOM)))
+            .set_default_color(Color::rgba(185, 185, 185, 255));
+        result.ship_counter[1][3].set_buffer_size(renderer, renderer.size().width as i32, renderer.size().height as i32)
+            .set_bounds(Some(Bounds::new(413.0 * SCREEN_ZOOM, 301.0 * SCREEN_ZOOM, 440.0 * SCREEN_ZOOM, 316.0 * SCREEN_ZOOM)))
+            .set_default_color(Color::rgba(185, 185, 185, 255));
+
+        for x in 0..=1 {
+            for y in 0..=3 {
+                result.ship_counter[x][y].set_text(renderer, "0", Attrs::new());
+            }
+        }
+
         result.status_text.set_text(renderer, "PLAYER 1 TURN", Attrs::new());
 
         result.win_image.pos = Vec3::new(0.0, 0.0, GUI_RESULT_ORDER);
@@ -130,6 +195,17 @@ impl GameBoard {
             message,
             Attrs::new(),
         );
+    }
+
+    pub fn update_ship_counter(&mut self, ship_count: &[i32; 4], renderer: &mut GpuRenderer, board_index: usize) {
+        for y in 0..=3 {
+            self.ship_counter[board_index][y].set_text(renderer, &format!("{}", ship_count[y]), Attrs::new());
+        }
+    }
+
+    pub fn reduce_ship_counter(&mut self, ship_size: usize, renderer: &mut GpuRenderer, board_index: usize) {
+        self.ship_counter_data[board_index][ship_size] -= 1;
+        self.ship_counter[board_index][ship_size].set_text(renderer, &format!("{}", self.ship_counter_data[board_index][ship_size]), Attrs::new());
     }
 }
 
@@ -311,13 +387,15 @@ impl Board {
         true
     }
 
-    pub fn prepare_board(&mut self, resource: &TextureAllocation, renderer: &mut GpuRenderer, gameboard: &GameBoard) {
+    pub fn prepare_board(&mut self, resource: &TextureAllocation, renderer: &mut GpuRenderer, gameboard: &mut GameBoard, board_index: usize) {
         let mut cur_index = 0;
-        for x in 0..4 {
-            for _i in 0..=gameboard.size_count[x] {
+        for x in 0..=3 {
+            for _i in 0..=gameboard.size_count[x] - 1 {
                 if self.place_ship(x, cur_index, resource, renderer) { cur_index += 1 }
             }
         }
+        let size_count = gameboard.size_count.clone();
+        gameboard.update_ship_counter(&size_count, renderer, board_index);
     }
 
     pub fn find_ship(&mut self, index: i32) -> Option<usize> {
@@ -328,7 +406,19 @@ impl Board {
         }
     }
 
-    pub fn hit_place(&mut self, pos: &Vec2, resource: &TextureAllocation, renderer: &mut GpuRenderer, animation: &mut Animation) -> Option<bool> {
+    pub fn count_size(&mut self, ship_index: i32) -> i32 {
+        let mut count = 0;
+        for data in self.data {
+            if let BoardType::Ship(index) = data {
+                if index == ship_index { count += 1; }
+            } else if let BoardType::Hit(index) = data {
+                if index == ship_index { count += 1; }
+            }
+        }
+        count
+    }
+
+    pub fn hit_place(&mut self, pos: &Vec2, resource: &TextureAllocation, renderer: &mut GpuRenderer, animation: &mut Animation, gameboard: &mut GameBoard) -> Option<bool> {
         let mut result = None;
         if pos.x >= 0.0 && pos.x < BOARD_SIZE && pos.y >= 0.0 && pos.y < BOARD_SIZE {
             let tile_index = get_tile_pos(pos.x as i32, pos.y as i32);
@@ -342,6 +432,9 @@ impl Board {
                     } else {
                         result = Some(false);
                     }
+                    let ship_size = self.count_size(index) - 1;
+                    let current_turn = if gameboard.current_turn == 0 { 1 } else { 0 };
+                    gameboard.reduce_ship_counter(ship_size as usize, renderer, current_turn)
                 } else {
                     result = Some(false);
                 }

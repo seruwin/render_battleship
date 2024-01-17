@@ -130,7 +130,7 @@ async fn main() -> Result<(), AscendingError> {
     // Builds the Windows that will be rendered too.
     let window = WindowBuilder::new()
         .with_title("Game")
-        .with_inner_size(PhysicalSize::new(1096, 560))
+        .with_inner_size(PhysicalSize::new(1096, 720))
         .with_visible(false)
         .with_resizable(false)
         .with_maximized(false)
@@ -267,9 +267,9 @@ async fn main() -> Result<(), AscendingError> {
         Board::new(&mut renderer, Vec2::new(27.0, 11.0)),
         Board::new(&mut renderer, Vec2::new(297.0, 11.0)),
     ];
-    boards.iter_mut().for_each(|board| {
-        board.prepare_board(&resource, &mut renderer, &gameboard);
-    });
+    for i in 0..=1 {
+        boards[i].prepare_board(&resource, &mut renderer, &mut gameboard, i);
+    }
 
     // Setup Manual Animation
     let mut animation = Animation::new(&resource, &mut renderer);
@@ -278,8 +278,8 @@ async fn main() -> Result<(), AscendingError> {
     let mut guis = Vec::with_capacity(1);
     let mut gui = Image::new(Some(resource.game_bg_texture), &mut renderer, 1);
     gui.pos = Vec3::new(0.0, 0.0, GUI_BG_ORDER);
-    gui.hw = Vec2::new(548.0, 280.0);
-    gui.uv = Vec4::new(0.0, 0.0, 548.0, 280.0);
+    gui.hw = Vec2::new(548.0, 360.0);
+    gui.uv = Vec4::new(0.0, 0.0, 548.0, 360.0);
     gui.color = Color::rgba(255, 255, 255, 255);
     guis.push(gui);
 
@@ -392,7 +392,7 @@ async fn main() -> Result<(), AscendingError> {
                     if !board_data.is_none() {
                         let board_index = board_data.unwrap() as usize;
                         if gameboard.current_turn != board_index as i32 {
-                            let hit_result = boards[board_index].hit_place(&tile_pos.unwrap(), &resource, &mut renderer, &mut animation);
+                            let hit_result = boards[board_index].hit_place(&tile_pos.unwrap(), &resource, &mut renderer, &mut animation, &mut gameboard);
                             if !hit_result.is_none() {
                                 let got_winner = hit_result.unwrap();
                                 if got_winner {
@@ -449,6 +449,11 @@ async fn main() -> Result<(), AscendingError> {
         // Text
         state.text_renderer.text_update(&mut text, &mut state.text_atlas, &mut renderer).unwrap();
         state.text_renderer.text_update(&mut gameboard.status_text, &mut state.text_atlas, &mut renderer).unwrap();
+        for x in 0..=1 {
+            for y in 0..=3 {
+                state.text_renderer.text_update(&mut gameboard.ship_counter[x][y], &mut state.text_atlas, &mut renderer).unwrap();
+            }
+        }
         // this cycles all the Image's in the Image buffer by first putting them in rendering order
         // and then uploading them to the GPU if they have moved or changed in any way. clears the
         // Image buffer for the next render pass. Image buffer only holds the ID's and Sortign info
